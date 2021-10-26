@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 )
 
+//ParseConfig parses the configuration
 func ParseConfig(filename string, outputInterface interface{}) (err error) {
 	filename = filepath.Clean(filename)
 	file, err := os.ReadFile(filename)
@@ -15,13 +16,14 @@ func ParseConfig(filename string, outputInterface interface{}) (err error) {
 	}
 	return yaml.Unmarshal(file, outputInterface)
 }
+//GetZones gets ZoneIDs from environment variables
 func GetZones() {
 	for i := 1; i <= 10; i++ {
-		zoneId := os.Getenv(fmt.Sprintf("CF_ZONE_%d", i))
-		if zoneId == "" {
+		zoneID := os.Getenv(fmt.Sprintf("CF_ZONE_%d", i))
+		if zoneID == "" {
 			return
 		}
-		Conf.ZoneIDs = append(Conf.ZoneIDs, zoneId)
+		conf.ZoneIDs = append(conf.ZoneIDs, zoneID)
 	}
 
 }

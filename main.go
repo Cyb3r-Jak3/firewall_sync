@@ -9,19 +9,19 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+//Config is the configuration containing the zones, filter expression and rule name
 type Config struct {
 	FilterExpression string `yaml:"expression,omitempty"`
 	RuleName         string `yaml:"rule,omitempty"`
-	FilterID         string
-	RuleId           string
 	ZoneIDs          []string `yaml:"zoneIDs,omitempty"`
 }
 
 var (
 	log       = logrus.New()
 	ctx       = context.Background()
-	Conf      *Config
-	ApiClient *cloudflare.API
+	conf      *Config
+	//APIClient is the Cloudflare Client that is used
+	APIClient *cloudflare.API
 )
 
 func setLogLevel()  {
@@ -31,6 +31,7 @@ func setLogLevel()  {
 	default:
 		log.SetLevel(logrus.InfoLevel)
 	}
+	log.Debugf("Log Level set to %v", log.Level)
 }
 
 
@@ -41,36 +42,36 @@ func main() {
 	if apiToken == "" {
 		log.Fatal("No API Token set")
 	}
-	err := ParseConfig("config.yml", &Conf)
+	err := ParseConfig("config.yml", &conf)
 	if err != nil {
 		log.WithError(err).Fatal("Error reading config")
 	}
-	ApiClient, err = cloudflare.NewWithAPIToken(apiToken)
+	APIClient, err = cloudflare.NewWithAPIToken(apiToken)
 	if err != nil {
 		log.WithError(err).Fatal("Error making API client")
 	}
-	if len(Conf.ZoneIDs) == 0 {
+	if len(conf.ZoneIDs) == 0 {
 		GetZones()
 	}
-	if len(Conf.ZoneIDs) == 0 {
+	if len(conf.ZoneIDs) == 0 {
 		log.Fatal("There were no zone IDs found")
 	}
-	for _, zone := range Conf.ZoneIDs {
+	for _, zone := range conf.ZoneIDs {
 		log.Debugf("Zone: %s", zone)
-		rules, err := ApiClient.FirewallRules(ctx, zone, cloudflare.PaginationOptions{})
+		rules, err := APIClient.FirewallRules(ctx, zone, cloudflare.PaginationOptions{})
 		if err != nil {
 			log.WithError(err).Errorf("Error getting rules for zone: %s", zone)
 			continue
 		}
 		var filter, ruleid string
 		for _, rule := range rules {
-			if rule.Description == Conf.RuleName {
+			if rule.Description == conf.RuleName {
 				log.Debugf("Found rule by name for zone: %s", zone)
 				filter = rule.Filter.ID
 				ruleid = rule.ID
 				break
 			}
-			if rule.Filter.Expression == Conf.FilterExpression {
+			if rule.Filter.Expression == conf.FilterExpression {
 				log.Debugf("Found rule by expression for zone: %s", zone)
 				filter = rule.Filter.ID
 				ruleid = rule.ID

@@ -1,0 +1,2 @@
+expression: "(http.request.uri.path contains \".php\")"
+rule: "Block PHP Extension (Firewall Sync)"

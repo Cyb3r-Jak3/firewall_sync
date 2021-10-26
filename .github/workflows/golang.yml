@@ -1,0 +1,72 @@
+name: Test Go
+
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+    paths:
+      - 'go.sum'
+      - 'go.mod'
+      - '**.go'
+      - .github/workflows/golang.yml
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  security-events: write
+  actions: write
+
+jobs:
+  Go:
+    runs-on: ubuntu-latest
+    env:
+      GO111MODULE: on
+
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - uses: actions/cache@v2.1.6
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            go-
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get Extra
+        run: |
+          go get -u golang.org/x/lint/golint
+          go get -u github.com/securego/gosec/v2/cmd/gosec
+
+      - name: Lint
+        run: make lint
+
+      - name: Gosec Security Scanner
+        run: make scan
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: security.sarif
+
+      - name: Build
+        run: go build -o firewall_sync-${{ github.sha }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Artifacts
+          path: |
+            security.sarif
+            c.out
+            api-${{ github.sha }}
