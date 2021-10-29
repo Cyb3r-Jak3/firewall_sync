@@ -37,8 +37,6 @@ jobs:
             ~/go/pkg/mod
             ~/.cache/go-build
           key: go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            go-
 
       - name: Checkout code
         uses: actions/checkout@v2
