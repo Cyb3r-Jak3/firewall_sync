@@ -16,6 +16,7 @@ func ParseConfig(filename string, outputInterface interface{}) (err error) {
 	}
 	return yaml.Unmarshal(file, outputInterface)
 }
+
 //GetZones gets ZoneIDs from environment variables
 func GetZones() {
 	for i := 1; i <= 10; i++ {
