@@ -77,26 +77,26 @@ func run(c *cli.Context) error {
 			log.WithError(err).Errorf("Error getting rules for zone: %s", zone)
 			continue
 		}
-		var filter, ruleId string
+		var filter, ruleID string
 		for _, rule := range rules {
 			if rule.Description == conf.RuleName {
 				log.Debugf("Found rule by name for zone: %s", zone)
 				filter = rule.Filter.ID
-				ruleId = rule.ID
+				ruleID = rule.ID
 				break
 			}
 			if rule.Filter.Expression == conf.FilterExpression {
 				log.Debugf("Found rule by expression for zone: %s", zone)
 				filter = rule.Filter.ID
-				ruleId = rule.ID
+				ruleID = rule.ID
 				break
 			}
 
 		}
-		log.Debugf("Filter %s Rule ID %s", filter, ruleId)
+		log.Debugf("Filter %s Rule ID %s", filter, ruleID)
 		if filter != "" {
 			log.Debugf("Updating existing rule for zone %s", zone)
-			UpdateRule(zone, filter, ruleId)
+			UpdateRule(zone, filter, ruleID)
 		} else {
 			log.Debugf("Creating rule for zone %s", zone)
 			CreateRule(zone)

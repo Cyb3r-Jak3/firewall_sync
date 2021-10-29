@@ -1,6 +1,6 @@
 lint:
-	go vet
-	golint -set_exit_status
+	go vet ./...
+	golint -set_exit_status ./...
 
 
 scan:
