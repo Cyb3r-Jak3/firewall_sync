@@ -9,5 +9,5 @@ RUN go build -o /go/bin/app
 
 FROM gcr.io/distroless/static
 COPY --from=build /go/bin/app /
-COPY ./config.yml /
-CMD ["/app"]
+ENTRYPOINT ["/app"]
+CMD ["-c", "config.yml"]
