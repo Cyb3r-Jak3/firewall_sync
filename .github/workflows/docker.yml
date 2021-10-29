@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        targets: ['distroless', 'alpine']
+        target: ['distroless', 'alpine']
     steps:
 
       - name: Login To Docker
