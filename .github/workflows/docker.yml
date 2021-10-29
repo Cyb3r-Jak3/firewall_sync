@@ -16,6 +16,9 @@ on:
 jobs:
   Docker:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        targets: ['distroless', 'alpine']
     steps:
 
       - name: Login To GitHub
@@ -30,10 +33,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3.6.0
         with:
-          images: ghcr.io/cyb3r-jak3/go-api
+          images: cyb3rjak3/firewall_sync,ghcr.io/cyb3r-jak3/firewall_sync
           labels: |
             org.label-schema.vcs-url=https://github.com/Cyb3r-Jak3/firewall_sync.git
-            maintainer=Cyb3r Jak3 jake@jwhite.network
+            maintainer=Cyb3r Jak3 cyb3rjak3@pm.me
             org.opencontainers.image.vendor=cyb3rjak3
 
       - name: Set up Docker Buildx
@@ -51,3 +54,4 @@ jobs:
           file: Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          target: ${{ matrix.target }}
