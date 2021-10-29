@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/cloudflare/cloudflare-go"
 )
+
 //UpdateRule updates and existing firewall rule with a new filter
 func UpdateRule(ZoneID, Filter, Rule string) {
 	_, err := APIClient.Filter(ctx, ZoneID, Filter)
@@ -37,6 +38,7 @@ func UpdateRule(ZoneID, Filter, Rule string) {
 	}
 	log.Infof("Rule: %s in Zone %s updated", Rule, ZoneID)
 }
+
 //CreateRule creates a new rule if one with the same is not detected
 func CreateRule(ZoneID string) {
 	newRule := []cloudflare.FirewallRule{{
