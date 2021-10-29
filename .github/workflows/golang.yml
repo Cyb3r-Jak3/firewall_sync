@@ -59,7 +59,9 @@ jobs:
           sarif_file: security.sarif
 
       - name: Build
-        run: go build -ldflags "-X firewall_sync.commit=$(git rev-parse --short HEAD) -X firewall_sync.date=$(date)" -o firewall_sync-${{ github.sha }}
+        run: make build
+        env:
+          BUILDER: GithubActions
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
@@ -68,4 +70,4 @@ jobs:
           path: |
             security.sarif
             c.out
-            firewall_sync-${{ github.sha }}
+            firewall_sync

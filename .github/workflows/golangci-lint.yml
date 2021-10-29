@@ -1,4 +1,4 @@
-name: Test Go
+name: Golanglint CI
 
 on:
   push:
@@ -34,5 +34,5 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           version: latest
-          args: -E golint,gofmt
+          args: -E revive,gofmt
           skip-go-installation: true
