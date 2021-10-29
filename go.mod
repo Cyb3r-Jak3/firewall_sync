@@ -1,6 +1,6 @@
 module firewall_sync
 
-go 1.17
+go 1.16
 
 require (
 	github.com/cloudflare/cloudflare-go v0.26.0
