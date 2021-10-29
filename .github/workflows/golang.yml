@@ -47,11 +47,13 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           version: latest
-          args: -E gosec,golint,gofmt
+          args: -E golint,gofmt
           skip-go-installation: true
 
       - name: Gosec Security Scanner
-        run: make scan
+        run: |
+          go get -u github.com/securego/gosec/v2/cmd/gosec
+          make scan
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v1
