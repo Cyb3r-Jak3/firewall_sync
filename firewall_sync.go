@@ -29,20 +29,26 @@ var (
 	date      = "unknown" //nolint
 )
 
-func setLogLevel() {
-	switch strings.ToLower(os.Getenv("LOG_LEVEL")) {
-	case "trace":
-		log.SetLevel(logrus.TraceLevel)
-	case "debug":
+func setLogLevel(c *cli.Context) {
+	if c.Bool("debug") {
 		log.SetLevel(logrus.DebugLevel)
-	default:
+	} else if c.Bool("verbose") {
 		log.SetLevel(logrus.InfoLevel)
+	} else {
+		switch strings.ToLower(os.Getenv("LOG_LEVEL")) {
+		case "trace":
+			log.SetLevel(logrus.TraceLevel)
+		case "debug":
+			log.SetLevel(logrus.DebugLevel)
+		default:
+			log.SetLevel(logrus.InfoLevel)
+		}
 	}
 	log.Debugf("Log Level set to %v", log.Level)
 }
 
 func run(c *cli.Context) error {
-	setLogLevel()
+	setLogLevel(c)
 	log.Info("Starting")
 	apiToken := os.Getenv("CF_TOKEN")
 	if apiToken == "" {
@@ -112,10 +118,20 @@ func main() {
 	}
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
-			Name:  "config",
+			Name:    "config",
 			Aliases: []string{"c"},
-			Value: "./config.yml",
-			Usage: "Path to the configuration file",
+			Value:   "./config.yml",
+			Usage:   "Path to the configuration file",
+		},
+		&cli.BoolFlag{
+			Name:    "verbose",
+			Aliases: []string{"v"},
+			EnvVars: []string{"LOG_LEVEL_VERBOSE"},
+		},
+		&cli.BoolFlag{
+			Name:    "debug",
+			Aliases: []string{"d"},
+			EnvVars: []string{"LOG_LEVEL_DEBUG"},
 		},
 	}
 	app.Action = run
