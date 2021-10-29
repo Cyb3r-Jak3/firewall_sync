@@ -43,13 +43,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download
-        run: go mod download
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: latest
 
       - name: Get Extra
-        run: |
-          go get -u golang.org/x/lint/golint
-          go get -u github.com/securego/gosec/v2/cmd/gosec
+        run: go get -u github.com/securego/gosec/v2/cmd/gosec
 
       - name: Lint
         run: make lint
