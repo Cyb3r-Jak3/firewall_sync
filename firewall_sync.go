@@ -121,6 +121,6 @@ func main() {
 	app.Action = run
 	err := app.Run(os.Args)
 	if err != nil {
-		log.WithError(err).Fatal("Error runing app")
+		log.WithError(err).Fatal("Error running app")
 	}
 }
