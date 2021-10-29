@@ -47,14 +47,8 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           version: latest
-
-      - name: Get Extra
-        run: |
-          go get -u github.com/securego/gosec/v2/cmd/gosec
-          go get -u golang.org/x/lint/golint
-
-      - name: Lint
-        run: make lint
+          args: -E gosec,golint,gofmt
+          skip-go-installation: true
 
       - name: Gosec Security Scanner
         run: make scan
