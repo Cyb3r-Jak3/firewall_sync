@@ -11,29 +11,30 @@ import (
 
 //Config is the configuration containing the zones, filter expression and rule name
 type Config struct {
-	FilterExpression string `yaml:"expression,omitempty"`
-	RuleName         string `yaml:"rule,omitempty"`
+	FilterExpression string   `yaml:"expression,omitempty"`
+	RuleName         string   `yaml:"rule,omitempty"`
 	ZoneIDs          []string `yaml:"zoneIDs,omitempty"`
 }
 
 var (
-	log       = logrus.New()
-	ctx       = context.Background()
-	conf      *Config
+	log  = logrus.New()
+	ctx  = context.Background()
+	conf *Config
 	//APIClient is the Cloudflare Client that is used
 	APIClient *cloudflare.API
 )
 
-func setLogLevel()  {
+func setLogLevel() {
 	switch strings.ToLower(os.Getenv("LOG_LEVEL")) {
-	case "trace": log.SetLevel(logrus.TraceLevel)
-	case "debug": log.SetLevel(logrus.DebugLevel)
+	case "trace":
+		log.SetLevel(logrus.TraceLevel)
+	case "debug":
+		log.SetLevel(logrus.DebugLevel)
 	default:
 		log.SetLevel(logrus.InfoLevel)
 	}
 	log.Debugf("Log Level set to %v", log.Level)
 }
-
 
 func main() {
 	setLogLevel()
