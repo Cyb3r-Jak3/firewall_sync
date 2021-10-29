@@ -3,7 +3,7 @@ module firewall_sync
 go 1.17
 
 require (
-	github.com/cloudflare/cloudflare-go v0.10.1
+	github.com/cloudflare/cloudflare-go v0.26.0
 	github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
@@ -15,3 +15,5 @@ require (
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )
+
+require golang.org/x/net v0.0.0-20210510120150-4163338589ed // indirect
