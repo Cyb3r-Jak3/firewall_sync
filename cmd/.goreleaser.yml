@@ -1,0 +1,90 @@
+project_name: firewall_sync
+before:
+  hooks:
+    - go mod tidy
+    - cp ../LICENSE .
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    binary: firewall_sync
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+    format: tar.xz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}"
+checksum:
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+dockers:
+  -
+    image_templates:
+      - "ghcr.io/cyb3r-jak3/firewall_sync:latest-amd64"
+      - "ghcr.io/cyb3r-jak3/firewall_sync:{{ .Tag }}-amd64"
+      - "ghcr.io/cyb3r-jak3/firewall_sync:v{{ .Major }}-amd64"
+      - "ghcr.io/cyb3r-jak3/firewall_sync:v{{ .Major }}.{{ .Minor }}-amd64"
+      - "cyb3rjak3/firewall_sync:latest-amd64"
+      - "cyb3rjak3/firewall_sync:{{ .Tag }}-amd64"
+      - "cyb3rjak3/firewall_sync:v{{ .Major }}-amd64"
+      - "cyb3rjak3/firewall_sync:v{{ .Major }}.{{ .Minor }}-amd64"
+    goarch: amd64
+    dockerfile: ../Dockerfile
+    use: buildx
+    build_flag_templates:
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.source=https://github.com/Cyb3r-Jak3/firewall_sync"
+
+  -
+    image_templates:
+      - "cyb3rjak3/firewall_sync:latest-arm64v8"
+      - "cyb3rjak3/firewall_sync:{{ .Tag }}-arm64v8"
+      - "cyb3rjak3/firewall_sync:v{{ .Major }}-arm64v8"
+      - "cyb3rjak3/firewall_sync:v{{ .Major }}.{{ .Minor }}-arm64v8"
+      - "ghcr.io/cyb3r-jak3/firewall_sync:latest-arm64v8"
+      - "ghcr.io/cyb3r-jak3/firewall_sync:{{ .Tag }}-arm64v8"
+      - "ghcr.io/cyb3r-jak3/firewall_sync:v{{ .Major }}-arm64v8"
+      - "ghcr.io/cyb3r-jak3/firewall_sync:v{{ .Major }}.{{ .Minor }}-arm64v8"
+    goarch: arm64
+    dockerfile: ../Dockerfile
+    use: buildx
+    build_flag_templates:
+      - "--platform=linux/arm64/v8"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.source=https://github.com/Cyb3r-Jak3/firewall_sync"
+
+docker_manifests:
+  - name_template: ghcr.io/cyb3r-jak3/firewall_sync:{{ .Version }}
+    image_templates:
+      - ghcr.io/cyb3r-jak3/firewall_sync:{{ .Version }}-amd64
+      - ghcr.io/cyb3r-jak3/firewall_sync:{{ .Version }}-arm64v8
+
+release:
+  draft: true
