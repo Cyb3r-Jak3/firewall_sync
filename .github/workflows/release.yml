@@ -57,5 +57,6 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         with:
+          if-no-files-found: error
           name: GoReleaser
-          path: ./dist/
+          path: ./cmd/dist/
