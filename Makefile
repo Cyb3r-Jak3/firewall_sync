@@ -16,4 +16,4 @@ scan:
 
 
 build:
-	go build -ldflags='$(VERSION_FLAGS)'
+	go build -ldflags='$(VERSION_FLAGS)' ./...
