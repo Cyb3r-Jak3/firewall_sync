@@ -49,7 +49,7 @@ dockers:
       - "cyb3rjak3/firewall_sync:v{{ .Major }}-amd64"
       - "cyb3rjak3/firewall_sync:v{{ .Major }}.{{ .Minor }}-amd64"
     goarch: amd64
-    dockerfile: ../Dockerfile
+    dockerfile: ../release.Dockerfile
     use: buildx
     build_flag_templates:
       - "--platform=linux/amd64"
@@ -70,7 +70,7 @@ dockers:
       - "ghcr.io/cyb3r-jak3/firewall_sync:v{{ .Major }}-arm64v8"
       - "ghcr.io/cyb3r-jak3/firewall_sync:v{{ .Major }}.{{ .Minor }}-arm64v8"
     goarch: arm64
-    dockerfile: ../Dockerfile
+    dockerfile: ../release.Dockerfile
     use: buildx
     build_flag_templates:
       - "--platform=linux/arm64/v8"
