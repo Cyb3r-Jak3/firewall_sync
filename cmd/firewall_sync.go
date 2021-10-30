@@ -125,7 +125,7 @@ func main() {
 		},
 		&cli.BoolFlag{
 			Name:    "verbose",
-			Aliases: []string{"v"},
+			Aliases: []string{"V"},
 			EnvVars: []string{"LOG_LEVEL_VERBOSE"},
 		},
 		&cli.BoolFlag{
