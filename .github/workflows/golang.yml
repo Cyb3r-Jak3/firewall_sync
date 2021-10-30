@@ -41,16 +41,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get Extra
-        run: |
-          go get -u golang.org/x/lint/golint
-          go get -u github.com/securego/gosec/v2/cmd/gosec
-
-      - name: Lint
-        run: make lint
-
       - name: Gosec Security Scanner
-        run: make scan
+        run: |
+          go get -u github.com/securego/gosec/v2/cmd/gosec
+          make scan
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v1
@@ -58,7 +52,9 @@ jobs:
           sarif_file: security.sarif
 
       - name: Build
-        run: go build -o firewall_sync-${{ github.sha }}
+        run: make build
+        env:
+          BUILDER: GithubActions
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
@@ -67,4 +63,4 @@ jobs:
           path: |
             security.sarif
             c.out
-            api-${{ github.sha }}
+            firewall_sync
