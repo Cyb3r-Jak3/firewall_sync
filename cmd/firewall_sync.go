@@ -14,7 +14,7 @@ import (
 //Config is the configuration containing the zones, filter expression and rule name
 type Config struct {
 	Rules   []Rule   `yaml:"rules"`
-	ZoneIDs          []string `yaml:"zoneIDs,omitempty"`
+	ZoneIDs []string `yaml:"zoneIDs,omitempty"`
 }
 
 type Rule struct {

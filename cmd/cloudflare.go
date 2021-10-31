@@ -40,7 +40,6 @@ func RuleProcess(r Rule, zones []string) {
 	}
 }
 
-
 //UpdateRule updates and existing firewall rule with a new filter
 func UpdateRule(r Rule, ZoneID, Filter, RuleID string) {
 
