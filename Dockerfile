@@ -16,3 +16,13 @@ FROM alpine:latest as alpine
 COPY --from=build /go/bin/app /
 ENTRYPOINT ["/app"]
 CMD ["-c", "config.yml"]
+
+FROM alpine:latest as alpine-release
+COPY . /
+ENTRYPOINT ["/firewall_sync"]
+CMD ["-c", "config.yml"]
+
+FROM gcr.io/distroless/static as distroless-release
+COPY . /
+ENTRYPOINT ["/firewall_sync"]
+CMD ["-c", "config.yml"]
