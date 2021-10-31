@@ -90,4 +90,4 @@ fabric.properties
 
 ### Project Specific
 .env
-config.yml
+internal.yml

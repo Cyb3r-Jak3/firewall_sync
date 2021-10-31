@@ -13,9 +13,16 @@ import (
 
 //Config is the configuration containing the zones, filter expression and rule name
 type Config struct {
-	FilterExpression string   `yaml:"expression,omitempty"`
-	RuleName         string   `yaml:"rule,omitempty"`
+	Rules   []Rule   `yaml:"rules"`
 	ZoneIDs          []string `yaml:"zoneIDs,omitempty"`
+}
+
+type Rule struct {
+	Name       string   `yaml:"name"`
+	Expression string   `yaml:"expression"`
+	ZoneIDs    []string `yaml:"zoneIDs,omitempty"`
+	ZonesNames []string `yaml:"zonesNames,omitempty"`
+	Zones      []string
 }
 
 var (
@@ -27,6 +34,7 @@ var (
 	version   = "dev"     //nolint
 	commit    = "none"    //nolint
 	date      = "unknown" //nolint
+	builtBy   = "unknown" //nolint
 )
 
 func setLogLevel(c *cli.Context) {
@@ -54,9 +62,9 @@ func run(c *cli.Context) error {
 	if apiToken == "" {
 		return fmt.Errorf("no API token set")
 	}
-	err := ParseConfig(c.String("config"), &conf)
+	err := GenerateConfig(c.String("config"))
 	if err != nil {
-		log.WithError(err).Error("Error reading config")
+		log.WithError(err).Error("Error generating config")
 		return err
 	}
 	APIClient, err = cloudflare.NewWithAPIToken(apiToken)
@@ -64,42 +72,14 @@ func run(c *cli.Context) error {
 		log.WithError(err).Error("Error making API client")
 		return err
 	}
-	if len(conf.ZoneIDs) == 0 {
-		GetZones()
-	}
-	if len(conf.ZoneIDs) == 0 {
-		return fmt.Errorf("no zone IDs found")
-	}
-	for _, zone := range conf.ZoneIDs {
-		log.Debugf("Zone: %s", zone)
-		rules, err := APIClient.FirewallRules(ctx, zone, cloudflare.PaginationOptions{})
-		if err != nil {
-			log.WithError(err).Errorf("Error getting rules for zone: %s", zone)
-			continue
-		}
-		var filter, ruleID string
-		for _, rule := range rules {
-			if rule.Description == conf.RuleName {
-				log.Debugf("Found rule by name for zone: %s", zone)
-				filter = rule.Filter.ID
-				ruleID = rule.ID
-				break
-			}
-			if rule.Filter.Expression == conf.FilterExpression {
-				log.Debugf("Found rule by expression for zone: %s", zone)
-				filter = rule.Filter.ID
-				ruleID = rule.ID
-				break
-			}
-
-		}
-		log.Debugf("Filter %s Rule ID %s", filter, ruleID)
-		if filter != "" {
-			log.Debugf("Updating existing rule for zone %s", zone)
-			UpdateRule(zone, filter, ruleID)
+	log.Debugf("There are %d rules", len(conf.Rules))
+	for _, rule := range conf.Rules {
+		if len(rule.Zones) == 0 {
+			log.Debugf("Rule %s has no zones configured. Applying to all zones", rule.Name)
+			RuleProcess(rule, conf.ZoneIDs)
 		} else {
-			log.Debugf("Creating rule for zone %s", zone)
-			CreateRule(zone)
+			log.Debugf("Rule %s has %d zones configured.", rule.Name, len(rule.ZoneIDs))
+			RuleProcess(rule, rule.ZoneIDs)
 		}
 	}
 	return nil
@@ -109,7 +89,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "Firewall Sync"
 	app.Usage = "Sync firewall rules between zones"
-	app.Version = fmt.Sprintf("%s, Commit: %s, Date: %s", version, commit, date)
+	app.Version = fmt.Sprintf("%s, Commit: %s, Date: %s, Built By: %s", version, commit, date, builtBy)
 	app.Authors = []*cli.Author{
 		{
 			Name:  "Cyb3r-Jak3",

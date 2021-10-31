@@ -7,14 +7,21 @@ import (
 	"path/filepath"
 )
 
-//ParseConfig parses the configuration
-func ParseConfig(filename string, outputInterface interface{}) (err error) {
+//GenerateConfig parses the configuration
+func GenerateConfig(filename string) (err error) {
 	filename = filepath.Clean(filename)
 	file, err := os.ReadFile(filename)
 	if err != nil {
 		return err
 	}
-	return yaml.Unmarshal(file, outputInterface)
+	if err = yaml.Unmarshal(file, &conf); err != nil {
+		return err
+	}
+	if len(conf.Rules) == 0 {
+		return fmt.Errorf("no rules found")
+	}
+	GetZones()
+	return nil
 }
 
 //GetZones gets ZoneIDs from environment variables

@@ -1,4 +1,4 @@
-
+phony: lint scan build
 
 GIT_COMMIT ?= $(shell git rev-parse --verify HEAD)
 GIT_VERSION ?= $(shell git describe --tags --always --dirty="-dev")

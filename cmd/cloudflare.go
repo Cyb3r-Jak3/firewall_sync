@@ -4,50 +4,83 @@ import (
 	"github.com/cloudflare/cloudflare-go"
 )
 
-//UpdateRule updates and existing firewall rule with a new filter
-func UpdateRule(ZoneID, Filter, Rule string) {
-	_, err := APIClient.Filter(ctx, ZoneID, Filter)
-	if err != nil {
-		log.WithError(err).Error("Error checking for existing filter")
-		return
+func RuleProcess(r Rule, zones []string) {
+	log.Debugf("Zones: %v", zones)
+	for _, zone := range zones {
+		log.Debugf("Zone: %s", zone)
+		rules, err := APIClient.FirewallRules(ctx, zone, cloudflare.PaginationOptions{})
+		if err != nil {
+			log.WithError(err).Errorf("Error getting rules for zone: %s", zone)
+			continue
+		}
+		var filter, ruleID string
+		for _, rule := range rules {
+			if rule.Description == r.Name {
+				log.Debugf("Found rule by name for zone: %s", zone)
+				filter = rule.Filter.ID
+				ruleID = rule.ID
+				break
+			}
+			// This should only be found if the name changes or on first run
+			if rule.Filter.Expression == r.Expression {
+				log.Debugf("Found rule by expression for zone: %s", zone)
+				filter = rule.Filter.ID
+				ruleID = rule.ID
+				break
+			}
+
+		}
+		if filter != "" {
+			log.Debugf("Updating existing rule for zone %s", zone)
+			UpdateRule(r, zone, filter, ruleID)
+		} else {
+			log.Debugf("Creating rule for zone %s", zone)
+			CreateRule(r, zone)
+		}
 	}
+}
+
+
+//UpdateRule updates and existing firewall rule with a new filter
+func UpdateRule(r Rule, ZoneID, Filter, RuleID string) {
+
 	filter := cloudflare.Filter{
 		ID:          Filter,
-		Expression:  conf.FilterExpression,
-		Description: conf.RuleName,
+		Expression:  r.Expression,
+		Description: r.Name,
 	}
 	newFilter, err := APIClient.UpdateFilter(ctx, ZoneID, filter)
 	if err != nil {
 		log.WithError(err).Error("Error updating filter")
 	}
 	updatedRule := cloudflare.FirewallRule{
-		ID: Rule,
+		ID: RuleID,
 		Filter: cloudflare.Filter{
 			ID:          newFilter.ID,
-			Expression:  conf.FilterExpression,
-			Description: conf.RuleName,
+			Expression:  r.Expression,
+			Description: r.Name,
 		},
 		Action:      "block",
-		Description: conf.RuleName,
+		Description: r.Name,
 		Priority:    900,
 	}
 	_, err = APIClient.UpdateFirewallRule(ctx, ZoneID, updatedRule)
 	if err != nil {
-		log.WithError(err).Errorf("Error updating rule: %s in zone %s", Rule, ZoneID)
+		log.WithError(err).Errorf("Error updating rule: %s in zone %s", RuleID, ZoneID)
 		return
 	}
-	log.Infof("Rule: %s in Zone %s updated", Rule, ZoneID)
+	log.Infof("RuleID: %s in Zone %s updated", RuleID, ZoneID)
 }
 
 //CreateRule creates a new rule if one with the same is not detected
-func CreateRule(ZoneID string) {
+func CreateRule(rule Rule, ZoneID string) {
 	newRule := []cloudflare.FirewallRule{{
 		Filter: cloudflare.Filter{
-			Expression:  conf.FilterExpression,
-			Description: conf.RuleName,
+			Expression:  rule.Expression,
+			Description: rule.Name,
 		},
 		Action:      "block",
-		Description: conf.RuleName,
+		Description: rule.Name,
 		Priority:    900,
 	}}
 	_, err := APIClient.CreateFirewallRules(ctx, ZoneID, newRule)
