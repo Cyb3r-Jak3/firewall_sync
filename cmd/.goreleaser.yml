@@ -52,7 +52,7 @@ dockers:
     dockerfile: ../Dockerfile
     use: buildx
     build_flag_templates:
-      - "--target distroless-release"
+      - "--target=distroless-release"
       - "--platform=linux/amd64"
       - "--label=org.opencontainers.image.created={{ .Date }}"
       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
@@ -74,7 +74,7 @@ dockers:
     dockerfile: ../Dockerfile
     use: buildx
     build_flag_templates:
-      - "--target distroless-release"
+      - "--target=distroless-release"
       - "--platform=linux/arm64/v8"
       - "--label=org.opencontainers.image.created={{ .Date }}"
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
