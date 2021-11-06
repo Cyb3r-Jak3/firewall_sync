@@ -37,7 +37,7 @@ jobs:
             ~/go/pkg/mod
             ~/.cache/go-build
           key: go-${{ hashFiles('**/go.sum') }}
-          restore-key: |
+          restore-keys: |
             go-
 
       - name: Checkout code

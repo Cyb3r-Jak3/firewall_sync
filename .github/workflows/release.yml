@@ -14,7 +14,7 @@ on:
       - main
 jobs:
   goreleaser:
-    Name: Release with GoReleaser
+    name: Release with GoReleaser
     runs-on: ubuntu-latest
     steps:
       -
