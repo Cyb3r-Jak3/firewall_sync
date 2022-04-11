@@ -54,7 +54,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Dist
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@v2.3.1
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         with:
           if-no-files-found: error
