@@ -22,7 +22,7 @@ jobs:
         target: ['distroless', 'alpine']
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Bake ${{ matrix.target }}
         uses: docker/bake-action@v1.6.0
