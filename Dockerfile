@@ -5,7 +5,7 @@ COPY . /go/src/app
 
 ENV CGO_ENABLED=0
 ENV GO111MODULE=on
-RUN go build -o /go/bin/app ./...
+RUN go build -buildvcs=false -o /go/bin/app ./...
 
 FROM gcr.io/distroless/static as distroless
 COPY --from=build /go/bin/app /
