@@ -22,7 +22,10 @@ jobs:
         target: ['distroless', 'alpine']
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2.0.0
 
       - name: Bake ${{ matrix.target }}
         uses: docker/bake-action@v1.6.0
